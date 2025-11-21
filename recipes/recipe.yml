@@ -5,20 +5,13 @@ image-version: stable
 
 modules:
   # OpenConnect COPR for Adidas VPN
-  # Note: Using Fedora 42 as F43 builds may not be ready yet
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/dwmw2/openconnect/repo/fedora-42/dwmw2-openconnect-fedora-42.repo
+      - https://copr.fedorainfracloud.org/coprs/dwmw2/openconnect/repo/fedora-43/dwmw2-openconnect-fedora-43.repo
     install:
       - openconnect
       - NetworkManager-openconnect
       - NetworkManager-openconnect-gnome
-    replace:
-      - from-repo: copr:copr.fedorainfracloud.org:dwmw2:openconnect
-        packages:
-          - openconnect
-          - NetworkManager-openconnect
-          - NetworkManager-openconnect-gnome
 
   # Browsers as native RPMs
   - type: rpm-ostree
