@@ -16,12 +16,12 @@ modules:
   # Browsers as native RPMs
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/zawertun/firefox-dev/repo/fedora-43/zawertun-firefox-dev-fedora-43.repo
+      - https://copr.fedorainfracloud.org/coprs/the4runner/firefox-dev/repo/fedora-43/the4runner-firefox-dev-fedora-43.repo
       - https://dl.google.com/linux/chrome/rpm/stable/x86_64
       - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
       - https://packages.microsoft.com/yumrepos/edge
     install:
-      - firefox-developer-edition
+      - firefox-dev
       - google-chrome-stable
       - vivaldi-stable
       - microsoft-edge-stable
