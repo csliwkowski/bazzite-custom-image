@@ -16,7 +16,7 @@ modules:
   # Browsers as native RPMs
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/zawertun/firefox-dev/repo/fedora-$releasever/zawertun-firefox-dev-fedora-$releasever.repo
+      - https://copr.fedorainfracloud.org/coprs/zawertun/firefox-dev/repo/fedora-43/zawertun-firefox-dev-fedora-43.repo
       - https://dl.google.com/linux/chrome/rpm/stable/x86_64
       - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
       - https://packages.microsoft.com/yumrepos/edge
@@ -29,7 +29,7 @@ modules:
   # Mailspring email client
   - type: rpm-ostree
     repos:
-      - https://packagecloud.io/Mailspring/Releases/fedora/$releasever/$basearch
+      - https://packagecloud.io/Mailspring/Releases/fedora/43/x86_64
     install:
       - mailspring
 
