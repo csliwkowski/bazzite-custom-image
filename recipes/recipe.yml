@@ -13,21 +13,34 @@ modules:
       - NetworkManager-openconnect
       - NetworkManager-openconnect-gnome
 
-  # ============================================================================
-  # COMMENTED OUT - Add back one by one after minimal build works
-  # ============================================================================
+  # Browsers as native RPMs (split into separate modules to avoid RPM lock conflicts)
 
-  # Browsers as native RPMs
+  # Firefox Developer Edition
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/the4runner/firefox-dev/repo/fedora-43/the4runner-firefox-dev-fedora-43.repo
-      - google-chrome.repo
-      - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
-      - microsoft-edge.repo
     install:
       - firefox-dev
+
+  # Google Chrome
+  - type: rpm-ostree
+    repos:
+      - google-chrome.repo
+    install:
       - google-chrome-stable
+
+  # Vivaldi
+  - type: rpm-ostree
+    repos:
+      - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
+    install:
       - vivaldi-stable
+
+  # Microsoft Edge
+  - type: rpm-ostree
+    repos:
+      - microsoft-edge.repo
+    install:
       - microsoft-edge-stable
 
   # Mailspring email client (installed via direct RPM download)
@@ -78,7 +91,7 @@ modules:
       - nodejs              # Required for Gemini CLI
 
   # Flatpak applications
-  - type: default-flatpaks
+  - type: default-flatpaks@v1
     notify: true
     system:
       install:
