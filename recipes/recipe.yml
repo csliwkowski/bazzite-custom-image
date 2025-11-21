@@ -88,7 +88,6 @@ modules:
       - vlc                 # Media player
       - ffmpeg              # Multimedia framework
       - speedtest-cli       # Internet speed test
-      - nodejs              # Required for Gemini CLI
 
   # Flatpak applications
   - type: default-flatpaks@v1
@@ -119,53 +118,20 @@ modules:
         # Hardware management
         - io.github.pwr_solaar.solaar                     # Logitech device manager
 
-  # GNOME Extensions
+  # GNOME Extensions (using PK IDs to avoid ambiguity)
   - type: gnome-extensions
     install:
-      - Dash to Dock                                      # Customizable dock
-      - Dash to Panel                                     # Taskbar-style panel
-      - Clipboard Indicator                               # Clipboard history manager
-      - Desktop Icons NG (GNOME 40+)                     # Desktop icons support
-      - Extension List                                    # Manage extensions from panel
-      - Just Perfection                                   # Customize GNOME Shell
-      - Quick Close in Overview                           # Close windows with middle-click
-      - Tiling Shell                                      # Advanced window tiling
-      - Vitals                                            # System monitor in top bar
-      - Weather O'Clock                                   # Weather in clock area
-      - Weather or Not                                    # Weather indicator in panel
-
-  # AI CLI Tools Installation
-  - type: script
-    snippets:
-      # Claude CLI (native binary installation)
-      - |
-        echo "Installing Claude CLI (native binary)..."
-        curl -fsSL https://claude.ai/install.sh | bash -s -- --prefix=/usr/local
-        echo "Claude CLI installed successfully"
-
-      # Gemini CLI (requires Node.js - installed via npm)
-      - |
-        echo "Installing Gemini CLI..."
-        npm install -g @google/gemini-cli
-        echo "Gemini CLI installed successfully"
-
-      # OpenAI Codex CLI (download Rust binary from GitHub)
-      - |
-        echo "Installing OpenAI Codex CLI..."
-        ARCH=$(uname -m)
-        if [ "$ARCH" = "x86_64" ]; then
-          CODEX_URL="https://github.com/openai/codex/releases/latest/download/codex-x86_64-unknown-linux-gnu.tar.gz"
-        elif [ "$ARCH" = "aarch64" ]; then
-          CODEX_URL="https://github.com/openai/codex/releases/latest/download/codex-aarch64-unknown-linux-gnu.tar.gz"
-        else
-          echo "Unsupported architecture: $ARCH"
-          exit 1
-        fi
-        curl -L "$CODEX_URL" -o /tmp/codex.tar.gz
-        tar -xzf /tmp/codex.tar.gz -C /tmp
-        install -m 0755 /tmp/codex /usr/local/bin/codex
-        rm -rf /tmp/codex.tar.gz /tmp/codex
-        echo "OpenAI Codex CLI installed successfully"
+      - 307   # Dash to Dock - Customizable dock
+      - 1160  # Dash to Panel - Taskbar-style panel
+      - 779   # Clipboard Indicator - Clipboard history manager
+      - 2087  # Desktop Icons NG (GNOME 40+) - Desktop icons support
+      - 3088  # Extension List - Manage extensions from panel
+      - 3843  # Just Perfection - Customize GNOME Shell
+      - 352   # Quick Close in Overview - Close windows with middle-click
+      - 7065  # Tiling Shell - Advanced window tiling
+      - 1460  # Vitals - System monitor in top bar
+      - 5470  # Weather O'Clock - Weather in clock area
+      - 5660  # Weather or Not - Weather indicator in panel
 
   # DeepCool Digital Linux - RGB and display control for DeepCool hardware
   - type: script
