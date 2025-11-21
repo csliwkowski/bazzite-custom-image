@@ -13,11 +13,50 @@ modules:
       - NetworkManager-openconnect
       - NetworkManager-openconnect-gnome
 
+  # ============================================================================
+  # COMMENTED OUT - Add back one by one after minimal build works
+  # ============================================================================
+
+  # Browsers as native RPMs
+  - type: rpm-ostree
+    repos:
+      - https://copr.fedorainfracloud.org/coprs/the4runner/firefox-dev/repo/fedora-43/the4runner-firefox-dev-fedora-43.repo
+      - google-chrome.repo
+      - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
+      - microsoft-edge.repo
+    install:
+      - firefox-dev
+      - google-chrome-stable
+      - vivaldi-stable
+      - microsoft-edge-stable
+
+  # Mailspring email client (installed via direct RPM download)
+  - type: rpm-ostree
+    install:
+      - https://github.com/Foundry376/Mailspring/releases/download/1.16.0/mailspring-1.16.0-0.1.x86_64.rpm
+
+  # Google Antigravity IDE (AI-powered development platform)
+  - type: rpm-ostree
+    repos:
+      - antigravity.repo
+    install:
+      - antigravity
+
+  # Teams for Linux (native RPM)
+  - type: rpm-ostree
+    repos:
+      - https://repo.teamsforlinux.de/rpm/teams-for-linux.repo
+    keys:
+      - https://repo.teamsforlinux.de/teams-for-linux.asc
+    install:
+      - teams-for-linux
+
+  # ============================================================================
+
   # Warp Terminal (stable and preview channels)
   - type: rpm-ostree
     repos:
-      - https://releases.warp.dev/linux/rpm/stable
-      - https://releases.warp.dev/linux/rpm/preview
+      - warp-terminal.repo
     install:
       - warp-terminal
       - warp-terminal-preview
@@ -25,7 +64,7 @@ modules:
   # VS Code
   - type: rpm-ostree
     repos:
-      - https://packages.microsoft.com/yumrepos/vscode
+      - vscode.repo
     install:
       - code
 
@@ -36,6 +75,7 @@ modules:
       - vlc                 # Media player
       - ffmpeg              # Multimedia framework
       - speedtest-cli       # Internet speed test
+      - nodejs              # Required for Gemini CLI
 
   # Flatpak applications
   - type: default-flatpaks
@@ -63,6 +103,9 @@ modules:
         # Container management
         - io.podman_desktop.PodmanDesktop                 # Podman GUI
 
+        # Hardware management
+        - io.github.pwr_solaar.solaar                     # Logitech device manager
+
   # GNOME Extensions
   - type: gnome-extensions
     install:
@@ -78,11 +121,63 @@ modules:
       - Weather O'Clock                                   # Weather in clock area
       - Weather or Not                                    # Weather indicator in panel
 
+  # AI CLI Tools Installation
+  - type: script
+    snippets:
+      # Claude CLI (native binary installation)
+      - |
+        echo "Installing Claude CLI (native binary)..."
+        curl -fsSL https://claude.ai/install.sh | bash -s -- --prefix=/usr/local
+        echo "Claude CLI installed successfully"
+
+      # Gemini CLI (requires Node.js - installed via npm)
+      - |
+        echo "Installing Gemini CLI..."
+        npm install -g @google/gemini-cli
+        echo "Gemini CLI installed successfully"
+
+      # OpenAI Codex CLI (download Rust binary from GitHub)
+      - |
+        echo "Installing OpenAI Codex CLI..."
+        ARCH=$(uname -m)
+        if [ "$ARCH" = "x86_64" ]; then
+          CODEX_URL="https://github.com/openai/codex/releases/latest/download/codex-x86_64-unknown-linux-gnu.tar.gz"
+        elif [ "$ARCH" = "aarch64" ]; then
+          CODEX_URL="https://github.com/openai/codex/releases/latest/download/codex-aarch64-unknown-linux-gnu.tar.gz"
+        else
+          echo "Unsupported architecture: $ARCH"
+          exit 1
+        fi
+        curl -L "$CODEX_URL" -o /tmp/codex.tar.gz
+        tar -xzf /tmp/codex.tar.gz -C /tmp
+        install -m 0755 /tmp/codex /usr/local/bin/codex
+        rm -rf /tmp/codex.tar.gz /tmp/codex
+        echo "OpenAI Codex CLI installed successfully"
+
+  # DeepCool Digital Linux - RGB and display control for DeepCool hardware
+  - type: script
+    snippets:
+      - |
+        # Download and install DeepCool Digital Linux binary
+        echo "Downloading DeepCool Digital Linux v0.10.1-alpha..."
+        curl -L "https://github.com/Nortank12/deepcool-digital-linux/releases/download/v0.10.1-alpha/deepcool-digital-linux" -o /tmp/deepcool-digital-linux
+        chmod +x /tmp/deepcool-digital-linux
+        install -m 0755 /tmp/deepcool-digital-linux /usr/sbin/deepcool-digital-linux
+        rm /tmp/deepcool-digital-linux
+        echo "DeepCool Digital Linux installed successfully"
+
+  # Install system configuration files (systemd services, udev rules, etc.)
+  - type: files
+    files:
+      - source: system
+        destination: /
+
   # Enable automatic updates
   - type: systemd
     system:
       enabled:
         - rpm-ostreed-automatic.timer                     # Auto-update system daily
+        - deepcool-digital-linux.service                  # DeepCool hardware control
     user:
       enabled:
         - flatpak-automatic.timer                         # Auto-update Flatpaks
