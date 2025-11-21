@@ -14,24 +14,16 @@ modules:
       - NetworkManager-openconnect-gnome
 
   # Browsers as native RPMs
+  # Note: Firefox Dev COPR doesn't have F43 builds yet - install manually later
   - type: rpm-ostree
     repos:
-      - https://copr.fedorainfracloud.org/coprs/the4runner/firefox-dev/repo/fedora-43/the4runner-firefox-dev-fedora-43.repo
       - https://dl.google.com/linux/chrome/rpm/stable/x86_64
       - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
       - https://packages.microsoft.com/yumrepos/edge
     install:
-      - firefox-dev
       - google-chrome-stable
       - vivaldi-stable
       - microsoft-edge-stable
-
-  # Mailspring email client
-  - type: rpm-ostree
-    repos:
-      - https://packagecloud.io/Mailspring/Releases/fedora/43/x86_64
-    install:
-      - mailspring
 
   # Warp Terminal (stable and preview channels)
   - type: rpm-ostree
