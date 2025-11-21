@@ -13,18 +13,6 @@ modules:
       - NetworkManager-openconnect
       - NetworkManager-openconnect-gnome
 
-  # Browsers as native RPMs
-  # Note: Firefox Dev COPR doesn't have F43 builds yet - install manually later
-  - type: rpm-ostree
-    repos:
-      - https://dl.google.com/linux/chrome/rpm/stable/x86_64
-      - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
-      - https://packages.microsoft.com/yumrepos/edge
-    install:
-      - google-chrome-stable
-      - vivaldi-stable
-      - microsoft-edge-stable
-
   # Warp Terminal (stable and preview channels)
   - type: rpm-ostree
     repos:
@@ -48,22 +36,6 @@ modules:
       - vlc                 # Media player
       - ffmpeg              # Multimedia framework
       - speedtest-cli       # Internet speed test
-
-  # Google Antigravity IDE (AI-powered development platform)
-  - type: rpm-ostree
-    repos:
-      - https://us-central1-yum.pkg.dev/projects/antigravity-auto-updater-dev/antigravity-rpm
-    install:
-      - antigravity
-
-  # Teams for Linux (native RPM)
-  - type: rpm-ostree
-    repos:
-      - https://repo.teamsforlinux.de/rpm/teams-for-linux.repo
-    keys:
-      - https://repo.teamsforlinux.de/teams-for-linux.asc
-    install:
-      - teams-for-linux
 
   # Flatpak applications
   - type: default-flatpaks
