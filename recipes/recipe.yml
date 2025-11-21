@@ -157,12 +157,3 @@ modules:
       enabled:
         - rpm-ostreed-automatic.timer                     # Auto-update system daily
         - deepcool-digital-linux.service                  # DeepCool hardware control
-    user:
-      enabled:
-        - flatpak-automatic.timer                         # Auto-update Flatpaks
-
-  # Configure rpm-ostree auto-update policy
-  - type: files
-    files:
-      - system: system
-        # Copies rpm-ostreed.conf with AutomaticUpdatePolicy=stage
