@@ -4,14 +4,14 @@ base-image: ghcr.io/ublue-os/bazzite-gnome-nvidia
 image-version: stable
 
 modules:
-  # OpenConnect COPR
+  # Add COPR repo and override openconnect
   - type: script
     scripts:
-      - inline:
-          - curl -Lo /etc/yum.repos.d/dwmw2-openconnect.repo https://copr.fedorainfracloud.org/coprs/dwmw2/openconnect/repo/fedora-43/dwmw2-openconnect-fedora-43.repo
-          - rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:dwmw2:openconnect openconnect openconnect-libs
+      - inline: |
+          curl -Lo /etc/yum.repos.d/dwmw2-openconnect.repo https://copr.fedorainfracloud.org/coprs/dwmw2/openconnect/repo/fedora-43/dwmw2-openconnect-fedora-43.repo
+          rpm-ostree override replace --experimental --from repo=copr:copr.fedorainfracloud.org:dwmw2:openconnect openconnect openconnect-libs
   
-  # Then install NetworkManager packages
+  # Install NetworkManager packages
   - type: rpm-ostree
     install:
       - NetworkManager-openconnect
