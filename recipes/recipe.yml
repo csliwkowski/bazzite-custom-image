@@ -1,45 +1,136 @@
----
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-# image will be published to ghcr.io/<user>/<name>
-name: template
-# description will be included in the image's metadata
-description: This is my personal OS image.
+name: bazzite-custom-image
+description: Custom Bazzite GNOME with OpenConnect COPR for Adidas VPN
+base-image: ghcr.io/ublue-os/bazzite-gnome-nvidia
+image-version: stable
 
-# the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 42 # latest is also supported if you want new updates ASAP
-
-# module configuration, executed in order
-# you can include multiple instances of the same module
 modules:
+  # OpenConnect COPR for Adidas VPN
+  - type: rpm-ostree
+    repos:
+      - https://copr.fedorainfracloud.org/coprs/dwmw2/openconnect/repo/fedora-$releasever/dwmw2-openconnect-fedora-$releasever.repo
+    install:
+      - openconnect
+      - NetworkManager-openconnect
+      - NetworkManager-openconnect-gnome
+    replace:
+      - from-repo: copr:copr.fedorainfracloud.org:dwmw2:openconnect
+        packages:
+          - openconnect
+          - NetworkManager-openconnect
+          - NetworkManager-openconnect-gnome
+
+  # Browsers as native RPMs
+  - type: rpm-ostree
+    repos:
+      - https://copr.fedorainfracloud.org/coprs/zawertun/firefox-dev/repo/fedora-$releasever/zawertun-firefox-dev-fedora-$releasever.repo
+      - https://dl.google.com/linux/chrome/rpm/stable/x86_64
+      - https://repo.vivaldi.com/archive/vivaldi-fedora.repo
+      - https://packages.microsoft.com/yumrepos/edge
+    install:
+      - firefox-developer-edition
+      - google-chrome-stable
+      - vivaldi-stable
+      - microsoft-edge-stable
+
+  # Mailspring email client
+  - type: rpm-ostree
+    repos:
+      - https://packagecloud.io/Mailspring/Releases/fedora/$releasever/$basearch
+    install:
+      - mailspring
+
+  # Warp Terminal (stable and preview channels)
+  - type: rpm-ostree
+    repos:
+      - https://releases.warp.dev/linux/rpm/stable
+      - https://releases.warp.dev/linux/rpm/preview
+    install:
+      - warp-terminal
+      - warp-terminal-preview
+
+  # VS Code
+  - type: rpm-ostree
+    repos:
+      - https://packages.microsoft.com/yumrepos/vscode
+    install:
+      - code
+
+  # Core system tools and multimedia
+  - type: rpm-ostree
+    install:
+      - neovim              # Modern text editor
+      - vlc                 # Media player
+      - ffmpeg              # Multimedia framework
+      - speedtest-cli       # Internet speed test
+
+  # Google Antigravity IDE (AI-powered development platform)
+  - type: rpm-ostree
+    repos:
+      - https://us-central1-yum.pkg.dev/projects/antigravity-auto-updater-dev/antigravity-rpm
+    install:
+      - antigravity
+
+  # Teams for Linux (native RPM)
+  - type: rpm-ostree
+    repos:
+      - https://repo.teamsforlinux.de/rpm/teams-for-linux.repo
+    keys:
+      - https://repo.teamsforlinux.de/teams-for-linux.asc
+    install:
+      - teams-for-linux
+
+  # Flatpak applications
+  - type: default-flatpaks
+    notify: true
+    system:
+      install:
+        # Workspace and productivity
+        - org.ferdium.Ferdium                             # Workspace organizer
+        - io.github.zaedus.spider                         # Install & integrate web apps
+        
+        # Screenshot and image tools
+        - be.alexandervanhee.gradia                       # Screenshot annotation tool
+        
+        # API debugging and development
+        - com.reqable.Reqable                             # HTTP proxy & REST client
+        
+        # Note-taking and knowledge management
+        - com.logseq.Logseq                               # Local-first knowledge base
+        - org.standardnotes.standardnotes                 # Encrypted notes
+        
+        # Remote desktop and networking
+        - de.capypara.FieldMonitor                        # Remote desktop client (RDP/VNC/SPICE)
+        - io.github.zingytomato.netpeek                   # Network scanner
+        
+        # Container management
+        - io.podman_desktop.PodmanDesktop                 # Podman GUI
+
+  # GNOME Extensions
+  - type: gnome-extensions
+    install:
+      - Dash to Dock                                      # Customizable dock
+      - Dash to Panel                                     # Taskbar-style panel
+      - Clipboard Indicator                               # Clipboard history manager
+      - Desktop Icons NG (GNOME 40+)                     # Desktop icons support
+      - Extension List                                    # Manage extensions from panel
+      - Just Perfection                                   # Customize GNOME Shell
+      - Quick Close in Overview                           # Close windows with middle-click
+      - Tiling Shell                                      # Advanced window tiling
+      - Vitals                                            # System monitor in top bar
+      - Weather O'Clock                                   # Weather in clock area
+      - Weather or Not                                    # Weather indicator in panel
+
+  # Enable automatic updates
+  - type: systemd
+    system:
+      enabled:
+        - rpm-ostreed-automatic.timer                     # Auto-update system daily
+    user:
+      enabled:
+        - flatpak-automatic.timer                         # Auto-update Flatpaks
+
+  # Configure rpm-ostree auto-update policy
   - type: files
     files:
-      - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
-
-  - type: dnf
-    repos:
-      copr:
-        - atim/starship
-    install:
-      packages:
-        - micro
-        - starship
-    remove:
-      packages:
-        # example: removing firefox (in favor of the flatpak)
-        # "firefox" is the main package, "firefox-langpacks" is a dependency
-        - firefox
-        - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
-
-  - type: default-flatpaks
-    configurations:
-      - notify: true # Send notification after install/uninstall is finished (true/false)
-        scope: system
-        # If no repo information is specified, Flathub will be used by default
-        install: # system flatpaks we want all users to have and not remove
-          - org.mozilla.firefox
-          - org.gnome.Loupe
-      - scope: user # Also add Flathub user repo, but no user packages
-
-  - type: signing # this sets up the proper policy & signing files for signed images to work fully
+      - system: system
+        # Copies rpm-ostreed.conf with AutomaticUpdatePolicy=stage
